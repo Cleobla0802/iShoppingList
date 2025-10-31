@@ -2,75 +2,109 @@ package es.iescarrillo.ishoppinglist;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity for editing existing product information
+ * Allows users to modify product details and save changes
+ */
 public class EditarProducto extends AppCompatActivity {
 
-    private EditText etNombre, etNota;
-    private CheckBox cbNecesitaCompra;
-    private Button btnGuardar, btnCancelar;
-    private Producto producto;
-    private int position;
+    // UI Components
+    private EditText productNameEditText;
+    private EditText productNoteEditText;
+    private EditText productQuantityEditText;
+    private CheckBox purchaseStatusCheckBox;
+    private Button saveButton;
+    private Button cancelButton;
+
+    // Data
+    private Producto productToEdit;
+    private int productPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_producto);
 
-        etNombre = findViewById(R.id.etNombre);
-        etNota = findViewById(R.id.etNota);
-        cbNecesitaCompra = findViewById(R.id.cbNecesitaCompra);
-        btnGuardar = findViewById(R.id.btnGuardar);
-        btnCancelar = findViewById(R.id.btnCancelar);
+        initializeUIComponents();
+        retrieveProductData();
+        populateFormWithCurrentData();
+        setupButtonListeners();
+    }
 
-        // Obtener el producto y su posición
-        producto = (Producto) getIntent().getSerializableExtra("producto");
-        position = getIntent().getIntExtra("position", -1);
+    /**
+     * Initializes all UI components by finding their views from the layout
+     */
+    private void initializeUIComponents() {
+        productNameEditText = findViewById(R.id.etNombre);
+        productNoteEditText = findViewById(R.id.etNota);
+        productQuantityEditText = findViewById(R.id.etCantidad);
+        purchaseStatusCheckBox = findViewById(R.id.cbEstado);
+        saveButton = findViewById(R.id.btnGuardar);
+        cancelButton = findViewById(R.id.btnCancelar);
+    }
 
-        // Mostrar los datos actuales del producto
-        if (producto != null) {
-            etNombre.setText(producto.getNombre());
-            etNota.setText(producto.getNota());
-            cbNecesitaCompra.setChecked(producto.isEstado());
+    /**
+     * Retrieves the product data passed from the previous activity
+     */
+    private void retrieveProductData() {
+        productToEdit = (Producto) getIntent().getSerializableExtra("producto");
+        productPosition = getIntent().getIntExtra("position", -1);
+    }
+
+    /**
+     * Populates the form fields with the current product data
+     */
+    private void populateFormWithCurrentData() {
+        if (productToEdit != null) {
+            productNameEditText.setText(productToEdit.getName());
+            productNoteEditText.setText(productToEdit.getNote());
+            productQuantityEditText.setText(String.valueOf(productToEdit.getQuantity()));
+            purchaseStatusCheckBox.setChecked(productToEdit.getPurchaseStatus());
         }
+    }
 
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                guardarCambios();
-            }
+    /**
+     * Sets up click listeners for the save and cancel buttons
+     */
+    private void setupButtonListeners() {
+        // Save button - updates product with new values and returns to previous activity
+        saveButton.setOnClickListener(v -> {
+            updateProductWithNewValues();
         });
 
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancelar();
-            }
+        // Cancel button - closes activity without saving changes
+        cancelButton.setOnClickListener(v -> {
+            setResult(RESULT_CANCELED);
+            finish();
         });
     }
 
-    private void guardarCambios() {
-        // Actualizar el producto con los nuevos datos
-        producto.setNombre(etNombre.getText().toString());
-        producto.setNota(etNota.getText().toString());
-        producto.setEstado(cbNecesitaCompra.isChecked());
+    /**
+     * Updates the product object with the new values from the form fields
+     */
+    private void updateProductWithNewValues() {
+        if (productToEdit != null) {
+            productToEdit.setName(productNameEditText.getText().toString());
+            productToEdit.setNote(productNoteEditText.getText().toString());
 
-        // Volver directamente al MainActivity
-        Intent intent = new Intent(EditarProductoActivity.this, MainActivity.class);
-        intent.putExtra("productoActualizado", producto);
-        startActivity(intent);
-        finish();
+            // Handle quantity - default to 0 if empty
+            String quantityText = productQuantityEditText.getText().toString();
+            int quantity = quantityText.isEmpty() ? 0 : Integer.parseInt(quantityText);
+            productToEdit.setQuantity(quantity);
+
+            productToEdit.setPurchaseStatus(purchaseStatusCheckBox.isChecked());
+
+            // Return the updated product
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("updatedProduct", productToEdit);
+            resultIntent.putExtra("position", productPosition);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        }
     }
-
-    private void cancelar() {
-        // Volver al MainActivity sin guardar
-        Intent intent = new Intent(EditarProductoActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
 }

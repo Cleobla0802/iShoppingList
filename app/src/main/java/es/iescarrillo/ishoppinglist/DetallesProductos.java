@@ -2,82 +2,131 @@ package es.iescarrillo.ishoppinglist;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity for displaying detailed information about a selected product
+ * Shows all product attributes and provides options to edit or return
+ */
 public class DetallesProductos extends AppCompatActivity {
 
-    private TextView tvNombre, tvNota, tvEstado;
-    private Button btnEditar, btnVolver;
-    private Producto producto;
+    // UI Components
+    private TextView productIdTextView;
+    private TextView productNameTextView;
+    private TextView productNoteTextView;
+    private TextView productQuantityTextView;
+    private TextView productStatusTextView;
+    private Button editProductButton;
+    private Button returnButton;
+
+    // Data
+    private Producto selectedProduct;
+    private int productPosition;
+
+    // ActivityResultLauncher to replace deprecated startActivityForResult
+    private final ActivityResultLauncher<Intent> editProductLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Producto updatedProduct = (Producto) result.getData().getSerializableExtra("updatedProduct");
+                    if (updatedProduct != null) {
+                        selectedProduct = updatedProduct;
+                        displayAllProductDetails();
+
+                        // Return updated product to MainActivity
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("updatedProduct", updatedProduct);
+                        resultIntent.putExtra("position", productPosition);
+                        setResult(RESULT_OK, resultIntent);
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_producto);
 
-        tvNombre = findViewById(R.id.tvNombre);
-        tvNota = findViewById(R.id.tvNota);
-        tvEstado = findViewById(R.id.tvEstado);
-        btnEditar = findViewById(R.id.btnEditar);
-        btnVolver = findViewById(R.id.btnVolver);
-
-        // Obtener el producto de la pantalla anterior
-        producto = (Producto) getIntent().getSerializableExtra("producto");
-
-        // Mostrar los datos del producto
-        mostrarDatosProducto();
-
-        btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Abrir pantalla de edición
-                Intent intent = new Intent(DetallesProductos.this, EditarProducto.class);
-                intent.putExtra("producto", producto);
-                intent.putExtra("position", position);
-                startActivity(intent); // ← Solo startActivity normal
-                finish(); // ← Cerrar esta pantalla
-            }
-        });
-
-        btnVolver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish(); // Cierra esta pantalla y vuelve a la anterior
-            }
-        });
-
-        // En DetallesProductos.java, añade esto en onCreate después de los otros botones:
-
-        Button btnEditar = findViewById(R.id.btnEditar);
-        btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Abrir pantalla de edición
-                Intent intent = new Intent(DetallesProductos.this, EditarProducto.class);
-                intent.putExtra("producto", producto);
-                intent.putExtra("position", getIntent().getIntExtra("position", -1));
-                startActivityForResult(intent, 1); // Usamos startActivityForResult para recibir los cambios
-            }
-        });
+        initializeUIComponents();
+        retrieveProductData();
+        displayAllProductDetails();
+        setupButtonListeners();
     }
 
-    private void mostrarDatosProducto() {
-        tvNombre.setText("Nombre: " + producto.getNombre());
-        tvNota.setText("Nota: " + producto.getNota());
-        tvEstado.setText("Estado: " + (producto.isEstado() ? "POR COMPRAR" : "COMPRADO"));
+    /**
+     * Initializes all UI components by finding their views from the layout
+     */
+    private void initializeUIComponents() {
+        productIdTextView = findViewById(R.id.tvId);
+        productNameTextView = findViewById(R.id.tvNombre);
+        productNoteTextView = findViewById(R.id.tvNota);
+        productQuantityTextView = findViewById(R.id.tvCantidad);
+        productStatusTextView = findViewById(R.id.tvEstado);
+        editProductButton = findViewById(R.id.btnEditar);
+        returnButton = findViewById(R.id.btnVolver);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    /**
+     * Retrieves product data passed from the previous activity via Intent
+     */
+    private void retrieveProductData() {
+        selectedProduct = (Producto) getIntent().getSerializableExtra("producto");
+        productPosition = getIntent().getIntExtra("position", -1);
 
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            // Actualizar los datos mostrados
-            producto = (Producto) data.getSerializableExtra("productoActualizado");
-            mostrarDatosProducto();
+        // Create a new instance to avoid reference issues
+        if (selectedProduct != null) {
+            selectedProduct = new Producto(
+                    selectedProduct.getId(),
+                    selectedProduct.getName(),
+                    selectedProduct.getNote(),
+                    selectedProduct.getPurchaseStatus()
+            );
+            selectedProduct.setQuantity(selectedProduct.getQuantity());
         }
+    }
+
+    /**
+     * Displays ALL product details in the appropriate TextViews
+     */
+    private void displayAllProductDetails() {
+        if (selectedProduct != null) {
+            productIdTextView.setText("ID: " + selectedProduct.getId());
+            productNameTextView.setText("Name: " + selectedProduct.getName());
+            productNoteTextView.setText("Note: " + selectedProduct.getNote());
+            productQuantityTextView.setText("Quantity: " + selectedProduct.getQuantity());
+
+            String statusText = selectedProduct.getPurchaseStatus() ? "TO BUY" : "PURCHASED";
+            productStatusTextView.setText("Status: " + statusText);
+        }
+    }
+
+    /**
+     * Sets up click listeners for the edit and return buttons
+     */
+    private void setupButtonListeners() {
+        // Edit button - opens the product editing screen
+        editProductButton.setOnClickListener(v -> {
+            openProductEditScreen();
+        });
+
+        // Return button - closes this activity and returns to the main screen
+        returnButton.setOnClickListener(v -> {
+            finish();
+        });
+    }
+
+    /**
+     * Opens the product editing screen and passes the current product data
+     */
+    private void openProductEditScreen() {
+        Intent editIntent = new Intent(DetallesProductos.this, EditarProducto.class);
+        editIntent.putExtra("producto", selectedProduct);
+        editIntent.putExtra("position", productPosition);
+        editProductLauncher.launch(editIntent);
     }
 }

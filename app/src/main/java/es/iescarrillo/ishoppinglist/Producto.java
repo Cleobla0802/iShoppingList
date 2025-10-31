@@ -5,25 +5,21 @@ import java.io.Serializable;
 public class Producto implements Serializable {
 
     private int id;
-    private String nombre;
-    private String nota;
-    private int cantidad;
-    private boolean estado;
+    private String name;
+    private String note;
+    private int quantity;
+    private boolean purchaseStatus;
 
-    // Constructor vacío
     public Producto() {
-
     }
 
-    // Constructor con todos los datos
-    public Producto(int id, String nombre, String nota, boolean estado) {
+    public Producto(int id, String name, String note, boolean purchaseStatus) {
         this.id = id;
-        this.nombre = nombre;
-        this.nota = nota;
-        this.estado = estado;
+        this.name = name;
+        this.note = note;
+        this.purchaseStatus = purchaseStatus;
     }
 
-    // Getters y Setters
     public int getId() {
         return id;
     }
@@ -32,38 +28,44 @@ public class Producto implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getNota() {
-        return nota;
+    public String getNote() {
+        return note;
     }
 
-    public void setNota(String nota) {
-        this.nota = nota;
+    public void setNote(String note) {
+        this.note = note;
     }
 
-    public boolean isEstado() {
-        return estado;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setEstado(boolean estado) {
-        this.estado = estado;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public boolean getPurchaseStatus() {
+        return purchaseStatus;
+    }
+
+    public void setPurchaseStatus(boolean purchaseStatus) {
+        this.purchaseStatus = purchaseStatus;
+    }
+
+    public boolean needsPurchase() {
+        return purchaseStatus;
     }
 
     @Override
     public String toString() {
-        return "Producto{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", nota='" + nota + '\'' +
-                ", cantidad=" + cantidad +
-                ", estado=" + estado +
-                '}';
+        return name;
     }
 }
