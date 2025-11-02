@@ -3,69 +3,26 @@ package es.iescarrillo.ishoppinglist;
 import java.io.Serializable;
 
 public class Producto implements Serializable {
-
     private int id;
-    private String name;
-    private String note;
-    private int quantity;
-    private boolean purchaseStatus;
+    private String nombre;
+    private String nota;
+    private boolean pendiente;
 
-    public Producto() {
-    }
-
-    public Producto(int id, String name, String note, boolean purchaseStatus) {
+    public Producto(int id, String nombre, String nota, boolean pendiente) {
         this.id = id;
-        this.name = name;
-        this.note = note;
-        this.purchaseStatus = purchaseStatus;
+        this.nombre = nombre;
+        this.nota = nota;
+        this.pendiente = pendiente;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public String getNombre() { return nombre; }
+    public String getNota() { return nota; }
+    public boolean isPendiente() { return pendiente; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setNota(String nota) { this.nota = nota; }
+    public void setPendiente(boolean pendiente) { this.pendiente = pendiente; }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public boolean getPurchaseStatus() {
-        return purchaseStatus;
-    }
-
-    public void setPurchaseStatus(boolean purchaseStatus) {
-        this.purchaseStatus = purchaseStatus;
-    }
-
-    public boolean needsPurchase() {
-        return purchaseStatus;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+    public String toString() { return nombre; }
 }

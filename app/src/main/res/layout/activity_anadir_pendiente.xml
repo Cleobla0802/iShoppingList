@@ -1,0 +1,9 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:padding="20dp" android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Spinner android:id="@+id/spinner" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    <Button android:id="@+id/btnGuardar" android:text="Marcar como pendiente" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    <Button android:id="@+id/btnCancelar" android:text="Cancelar" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+</LinearLayout>

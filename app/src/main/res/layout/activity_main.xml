@@ -1,50 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:orientation="vertical" android:padding="20dp" android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="iShoppingList"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="32dp" />
+    <Spinner android:id="@+id/spinnerProductos" android:layout_width="match_parent" android:layout_height="wrap_content"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Products to buy:"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
+    <Button android:id="@+id/btnDetalle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Ver detalle"/>
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp" />
+    <Button android:id="@+id/btnAnadir" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Añadir producto"/>
 
-    <Button
-        android:id="@+id/btnVerDetalles"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View Product Details"
-        android:layout_marginBottom="10dp" />
-
-    <Button
-        android:id="@+id/btnAdd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add Product to System"
-        android:layout_marginBottom="16dp" />
-
-    <Button
-        android:id="@+id/btnPendiente"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add to Pending List" />
-
+    <Button android:id="@+id/btnAnadirPendiente" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Marcar como pendiente"/>
 </LinearLayout>
